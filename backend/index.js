@@ -44,6 +44,17 @@ app.post("/books", (req, res) => {
     })
 })
 
+app.get("/books/:id", (req, res) => {
+  const bookId = req.params.id;
+  const q = "SELECT * FROM books WHERE id = ?";
+
+  db.query(q, [bookId], (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data[0]);
+  });
+});
+
+
 app.put("/books/:id", (req, res) => {
     const bookId = req.params.id;
     const q = "UPDATE books SET `title` = ?, `description` = ?, `price` = ?, `cover` = ? WHERE id = ?";
