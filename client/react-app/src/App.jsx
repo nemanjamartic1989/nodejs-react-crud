@@ -2,7 +2,7 @@ import { useState } from 'react'
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Books from './pages/Books'
-import Update from './pages/Update'
+import Edit from './pages/Edit'
 import Add from './pages/Add'
 import "./style.css"
 
@@ -15,7 +15,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Books/>}/>
           <Route path="/add" element={<Add/>}/>
-          <Route path="/update/:id" element={<Update/>}/>
+          <Route path="/edit/:id" element={<Edit/>}/>
         </Routes>
       </BrowserRouter>
     </div>

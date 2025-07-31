@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { Link } from "react-router-dom";
 
 const schema = yup.object().shape({
     title: yup.string().required("Title is required"),
@@ -17,20 +17,42 @@ const schema = yup.object().shape({
     cover: yup.string().required("Cover is required"),
 });
 
-const Add = () => {
+const Update = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const bookId = location.pathname.split("/")[2];
 
     const {
         register,
         handleSubmit,
         formState: { errors },
+        reset,
     } = useForm({
         resolver: yupResolver(schema),
+        defaultValues: {
+            title: "",
+            description: "",
+            price: "",
+            cover: "",
+        },
     });
+
+    useEffect(() => {
+        const fetchBook = async () => {
+            try {
+                const res = await axios.get("http://localhost:8800/books/" + bookId);
+                reset(res.data);
+            } catch (err) {
+                console.log("Error:", err);
+            }
+        };
+
+        fetchBook();
+    }, [bookId, reset]);
 
     const onSubmit = async (data) => {
         try {
-            await axios.post("http://localhost:8800/books", data);
+            await axios.put("http://localhost:8800/books/" + bookId, data);
             navigate("/");
         } catch (err) {
             console.log(err);
@@ -39,7 +61,7 @@ const Add = () => {
 
     return (
         <div className="form">
-            <h1>Add New Book</h1>
+            <h1>Update Book</h1>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <input type="text" placeholder="Title" {...register("title")} />
                 {errors.title && <p style={{ color: "red" }}>{errors.title.message}</p>}
@@ -54,7 +76,7 @@ const Add = () => {
                 {errors.cover && <p style={{ color: "red" }}>{errors.cover.message}</p>}
 
                 <button className="form-button" type="submit">
-                    Add
+                    Update
                 </button>
             </form>
             <Link to="/">See all books</Link>
@@ -62,4 +84,4 @@ const Add = () => {
     );
 };
 
-export default Add;
+export default Update;
